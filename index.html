@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Summer Wasted Calc</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Summer Wasted Calc">
+    <link rel="apple-touch-icon" href="icon-192.png">
+
+    <!-- Яндекс.Метрика -->
+    <script type="text/javascript">
+        (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+            m[i].l=1*new Date();
+            for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}
+            k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+        (window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");
+
+        ym(XXXXXXXX, "init", {
+            clickmap: true,
+            trackLinks: true,
+            accurateTrackBounce: true,
+            webvisor: true
+        });
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/XXXXXXXX" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        body { background: linear-gradient(135deg, #0f172a, #1e2937); }
+        .wasted { background-color: #991b1b; }
+        .productive { background-color: #166534; }
+        .today { background-color: #c2410c; }
+        .locked { opacity: 0.75; pointer-events: none; }
+
+        .progress-bar {
+            height: 26px;
+            background: linear-gradient(to right, #ef4444, #f87171);
+            border-radius: 9999px;
+            overflow: hidden;
+            position: relative;
+        }
+        .progress-fill {
+            height: 100%;
+            transition: width 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .progress-green { background: linear-gradient(to right, #10b981, #34d399); }
+    </style>
+</head>
+<body class="min-h-screen text-white pb-12">
+<div class="max-w-4xl mx-auto p-4 sm:p-6">
+    <header class="text-center mb-8 sm:mb-10">
+        <h1 class="text-4xl sm:text-5xl font-bold mb-2">Счётчик проёбанного лета ☀️</h1>
+        <p class="text-lg sm:text-xl text-orange-400">Не дай лету уйти в проёб</p>
+        <p id="motivation" class="text-base sm:text-lg mt-2 italic opacity-90"></p>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="md:col-span-1 space-y-4">
+            <div class="bg-slate-800 rounded-2xl p-5 sm:p-6">
+                <h2 class="text-lg sm:text-xl mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-chart-simple"></i> Статистика
+                </h2>
+
+                <div id="remaining-days" class="mb-6 text-center"></div>
+                <div id="progress-section" class="mb-6"></div>
+                <div id="stats" class="space-y-4"></div>
+            </div>
+
+            <div class="bg-slate-800 rounded-2xl p-5 sm:p-6">
+                <h2 class="text-lg sm:text-xl mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-share-nodes"></i> Поделиться
+                </h2>
+                <div id="share-buttons" class="space-y-2"></div>
+            </div>
+        </div>
+
+        <div class="md:col-span-2">
+            <div class="bg-slate-800 rounded-2xl p-5 sm:p-6">
+                <h2 class="text-lg sm:text-xl font-bold mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-calendar-days"></i> Дни лета
+                </h2>
+                <div id="days-list" class="space-y-3 overflow-y-auto pr-2" style="max-height: 80vh;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ── Service Worker + уведомления ──────────────────────────────
+    let swRegistration = null;
+
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', async () => {
+            try {
+                swRegistration = await navigator.serviceWorker.register('./sw.js');
+                console.log('SW registered:', swRegistration.scope);
+                await setupNotifications();
+            } catch (err) {
+                console.log('SW error:', err);
+            }
+        });
+    }
+
+    async function setupNotifications() {
+        if (!('Notification' in window)) return;
+        if (Notification.permission === 'default') {
+            const permission = await Notification.requestPermission();
+            if (permission !== 'granted') return;
+        }
+        if (Notification.permission !== 'granted') return;
+        scheduleNotification();
+    }
+
+    function scheduleNotification() {
+        const now = new Date();
+        const target = new Date();
+        target.setHours(21, 0, 0, 0);
+        if (now >= target) target.setDate(target.getDate() + 1);
+
+        const msUntilNotif = target - now;
+        const lastScheduled = localStorage.getItem('notifScheduledFor');
+        const targetStr = target.toISOString();
+        if (lastScheduled === targetStr) return;
+        localStorage.setItem('notifScheduledFor', targetStr);
+
+        console.log(`Уведомление через ${Math.round(msUntilNotif / 60000)} мин`);
+
+        setTimeout(async () => {
+            const sw = await navigator.serviceWorker.ready;
+            sw.active.postMessage({ type: 'SHOW_NOTIFICATION' });
+            localStorage.removeItem('notifScheduledFor');
+            scheduleNotification();
+        }, msUntilNotif);
+    }
+
+    // ── Данные ───────────────────────────────────────────────────
+    const TOTAL_SUMMER_DAYS = 92;
+    const summerStart = new Date('2026-06-01');
+    const summerEnd = new Date('2026-08-31');
+
+    let data = JSON.parse(localStorage.getItem('proebSummer2026')) || {};
+
+    function saveData() {
+        localStorage.setItem('proebSummer2026', JSON.stringify(data));
+    }
+
+    function getDays() {
+        let days = [];
+        let current = new Date(summerStart);
+        while (current <= summerEnd) {
+            days.push(current.toISOString().split('T')[0]);
+            current.setDate(current.getDate() + 1);
+        }
+        return days;
+    }
+
+    function isToday(dateStr) {
+        return dateStr === new Date().toISOString().split('T')[0];
+    }
+
+    function isPast(dateStr) {
+        return dateStr < new Date().toISOString().split('T')[0];
+    }
+
+    function getRemainingDays() {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (today > summerEnd) return 0;
+        return Math.ceil(Math.abs(summerEnd - today) / (1000 * 60 * 60 * 24)) + 1;
+    }
+
+    function autoMarkWasted() {
+        const days = getDays();
+        const todayStr = new Date().toISOString().split('T')[0];
+        days.forEach(date => {
+            if (!data[date]) data[date] = { tasks: [], wasted: false };
+            if (isPast(date)) {
+                data[date].wasted = data[date].tasks.length === 0;
+            } else if (date === todayStr) {
+                data[date].wasted = false;
+            }
+        });
+        saveData();
+    }
+
+    function toggleTask(date, index) {
+        if (!isToday(date) || !data[date]) return;
+        data[date].tasks[index].done = !data[date].tasks[index].done;
+        saveData();
+        render();
+    }
+
+    function addTask(date) {
+        if (!isToday(date)) return;
+        const input = document.getElementById(`input-${date}`);
+        const text = input.value.trim();
+        if (!text) return;
+        if (!data[date]) data[date] = { tasks: [], wasted: false };
+        data[date].tasks.push({ text, done: true });
+        input.value = '';
+        saveData();
+        render();
+    }
+
+    function deleteTask(date, index) {
+        if (!isToday(date)) return;
+        if (confirm('Удалить задачу?')) {
+            data[date].tasks.splice(index, 1);
+            saveData();
+            render();
+        }
+    }
+
+    function calculateStats() {
+        const days = getDays();
+        const todayStr = new Date().toISOString().split('T')[0];
+        const completedDays = days.filter(date => date < todayStr);
+
+        let wasted = 0, productive = 0, totalTasks = 0;
+        completedDays.forEach(date => {
+            const d = data[date] || { tasks: [] };
+            totalTasks += d.tasks.length;
+            if (d.tasks.length === 0) wasted++;
+            else productive++;
+        });
+
+        const totalCompletedDays = completedDays.length;
+        const productivePercent = Math.round((productive / TOTAL_SUMMER_DAYS) * 100);
+        return { wasted, productive, totalCompletedDays, productivePercent, totalTasks };
+    }
+
+    // ── Мотивация ────────────────────────────────────────────────
+    function getMotivation(percent, completedDays) {
+        if (completedDays === 0) return { text: 'Лето началось. Не облажайся.', color: 'text-slate-400' };
+        if (percent === 100) return { text: '🏆 ЛЕГЕНДА. Лето не проёбано.', color: 'text-yellow-400' };
+        if (percent >= 81)   return { text: '🔥 Ты красава. Почти идеальное лето.', color: 'text-green-400' };
+        if (percent >= 61)   return { text: '💪 Неплохо! Лето ещё не слито.', color: 'text-green-500' };
+        if (percent >= 41)   return { text: '😐 Уже что-то. Но можешь лучше.', color: 'text-yellow-400' };
+        if (percent >= 21)   return { text: '😬 Маловато будет. Соберись.', color: 'text-orange-400' };
+        return { text: '😡 Ты вообще что себе думаешь? Всё лето ничего не делать?', color: 'text-red-400' };
+    }
+
+    // ── Рендер ───────────────────────────────────────────────────
+    function render() {
+        autoMarkWasted();
+
+        const s = calculateStats();
+        const remaining = getRemainingDays();
+
+        // Мотивация
+        const motiv = getMotivation(s.productivePercent, s.totalCompletedDays);
+        const motivEl = document.getElementById('motivation');
+        motivEl.textContent = motiv.text;
+        motivEl.className = `text-base sm:text-lg mt-2 italic opacity-90 ${motiv.color}`;
+
+        // Оставшиеся дни
+        document.getElementById('remaining-days').innerHTML = `
+          <div class="inline-flex items-center gap-3 bg-slate-900 rounded-2xl px-5 sm:px-6 py-3">
+            <i class="fa-solid fa-hourglass-half text-amber-400 text-2xl"></i>
+            <div>
+              <div class="text-3xl font-bold text-amber-300">${remaining}</div>
+              <div class="text-xs uppercase tracking-widest opacity-60 -mt-1">дней осталось</div>
+            </div>
+          </div>`;
+
+        // Прогрессбар: красный фон, зелёный заполняет по продуктивным дням
+        const greenWidth = s.productivePercent;
+        document.getElementById('progress-section').innerHTML = `
+          <div class="mb-2 text-sm opacity-75 text-center sm:text-left">Прогресс лета (92 дня)</div>
+          <div class="progress-bar">
+            <div class="progress-fill progress-green" style="width: ${greenWidth}%;"></div>
+          </div>
+          <div class="flex justify-between text-sm mt-3">
+            <div class="flex items-center gap-2">
+              <span class="text-green-400 font-bold">${s.productive}</span>
+              <span class="text-green-400/70">продуктивных</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-red-400/70">проёбано</span>
+              <span class="text-red-400 font-bold">${s.wasted}</span>
+            </div>
+          </div>`;
+
+        // Статистика
+        document.getElementById('stats').innerHTML = `
+          <div class="flex justify-between items-center p-4 bg-red-900/30 rounded-xl">
+            <span class="text-red-400">Проёбано дней:</span>
+            <span class="text-3xl font-bold text-red-400">${s.wasted}</span>
+          </div>
+          <div class="flex justify-between items-center p-4 bg-green-900/30 rounded-xl">
+            <span class="text-green-400">Продуктивных дней:</span>
+            <span class="text-3xl font-bold text-green-400">${s.productive}</span>
+          </div>
+          <div class="text-center text-sm opacity-70 mt-2">
+            Завершённых дней: <span class="font-bold">${s.totalCompletedDays}</span> / 92<br>
+            Добавлено задач: <span class="font-bold">${s.totalTasks}</span>
+          </div>`;
+
+        // Список дней
+        let html = '';
+        getDays().forEach(date => {
+            const dayData = data[date] || { tasks: [], wasted: false };
+            const isTodayDay = isToday(date);
+            const past = isPast(date);
+            const taskCount = dayData.tasks.length;
+
+            let dayClass = 'bg-slate-700';
+            if (past) dayClass = dayData.wasted ? 'wasted' : 'productive';
+            else if (isTodayDay) dayClass = taskCount > 0 ? 'today' : 'bg-slate-700';
+
+            html += `
+              <div class="${dayClass} ${!isTodayDay ? 'locked' : ''} rounded-xl p-4 transition-all">
+                <div class="flex justify-between items-center mb-3">
+                  <div class="font-mono text-base sm:text-lg ${isTodayDay ? 'text-orange-400 font-bold' : ''}">
+                    ${new Date(date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })}
+                    ${isTodayDay ? ' ← СЕГОДНЯ' : past ? ' (прошёл)' : ' (будет)'}
+                  </div>
+                  <div class="text-sm opacity-75">${taskCount} дел</div>
+                </div>
+                <div class="space-y-2 mb-4">
+                  ${dayData.tasks.map((task, i) => `
+                    <div class="flex items-center gap-3 bg-black/30 p-3 rounded-lg">
+                      <input type="checkbox" ${task.done ? 'checked' : ''}
+                             onchange="toggleTask('${date}', ${i})"
+                             class="w-5 h-5 accent-emerald-500 cursor-pointer">
+                      <span class="flex-1 text-white">${task.text}</span>
+                      ${isTodayDay ? `
+                        <button onclick="deleteTask('${date}', ${i})" class="text-red-400 hover:text-red-500">
+                          <i class="fa-solid fa-trash"></i>
+                        </button>` : ''}
+                    </div>`).join('')}
+                </div>
+                ${isTodayDay ? `
+                <div class="flex flex-col sm:flex-row gap-2">
+                  <input id="input-${date}" type="text" placeholder="Что планируешь / сделал?"
+                         class="flex-1 bg-slate-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                         onkeypress="if(event.key === 'Enter') addTask('${date}')">
+                  <button onclick="addTask('${date}')"
+                          class="bg-orange-500 hover:bg-orange-600 px-8 py-2 rounded-lg font-bold">+</button>
+                </div>` : ''}
+              </div>`;
+        });
+
+        document.getElementById('days-list').innerHTML = html;
+    }
+
+    function getEmojiBar(percent) {
+        const filled = Math.round(percent / 10);
+        const empty = 10 - filled;
+        return '🟩'.repeat(filled) + '⬜'.repeat(empty);
+    }
+
+    function getShareText(s) {
+        const motiv = getMotivation(s.productivePercent, s.totalCompletedDays);
+        const bar = getEmojiBar(s.productivePercent);
+        const siteUrl = window.location.href;
+        return `☀️ Моё лето 2026: ${s.productive} продуктивных дня из 92\nПрогресс: ${s.productivePercent}% ${bar}\n${motiv.text}\n\n${siteUrl}`;
+    }
+
+    function renderShareButtons() {
+        const s = calculateStats();
+        const text = getShareText(s);
+        const encoded = encodeURIComponent(text);
+
+        const buttons = [
+            {
+                label: 'Telegram',
+                icon: 'fa-brands fa-telegram',
+                color: 'bg-sky-500 hover:bg-sky-600',
+                url: `https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(text)}`
+            },
+            {
+                label: 'WhatsApp',
+                icon: 'fa-brands fa-whatsapp',
+                color: 'bg-green-600 hover:bg-green-700',
+                url: `https://wa.me/?text=${encoded}`
+            },
+            {
+                label: 'Viber',
+                icon: 'fa-brands fa-viber',
+                color: 'bg-purple-600 hover:bg-purple-700',
+                url: `viber://forward?text=${encoded}`
+            },
+            {
+                label: 'Instagram',
+                icon: 'fa-brands fa-instagram',
+                color: 'bg-pink-600 hover:bg-pink-700',
+                action: 'copy'
+            }
+        ];
+
+        const html = buttons.map(b => `
+            <a ${b.action === 'copy'
+            ? `href="#" onclick="copyForInstagram(); return false;"`
+            : `href="${b.url}" target="_blank" rel="noopener"`}
+               class="${b.color} flex items-center gap-3 px-4 py-3 rounded-xl text-white font-medium transition-all w-full">
+                <i class="${b.icon} text-lg w-5 text-center"></i>
+                <span>${b.label}</span>
+                ${b.action === 'copy' ? '<span class="ml-auto text-xs opacity-70">скопировать</span>' : ''}
+            </a>`).join('');
+
+        document.getElementById('share-buttons').innerHTML = html;
+    }
+
+    function copyForInstagram() {
+        const s = calculateStats();
+        const text = getShareText(s);
+        navigator.clipboard.writeText(text).then(() => {
+            const btn = document.querySelector('#share-buttons a:last-child');
+            const span = btn.querySelector('span:last-child');
+            span.textContent = '✓ скопировано!';
+            setTimeout(() => { span.textContent = 'скопировать'; }, 2000);
+        });
+    }
+
+    render();
+    renderShareButtons();
+</script>
+</body>
+</html>
