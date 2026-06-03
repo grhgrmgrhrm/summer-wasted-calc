@@ -377,15 +377,9 @@
     }
 
     function getShareText(s) {
-        const motiv = getMotivation(s.productivePercent, s.totalCompletedDays);
-        const bar = getEmojiBar(s.productivePercent);
-        const siteUrl = window.location.href;
+        const siteUrl = 'https://grhgrmgrhrm.github.io/summer-wasted-calc/';
         return `☀️ Моё лето 2026
 ─────────────────────
-📅 Продуктивных дней: ${s.productive} из 92
-📊 Прогресс: ${s.productivePercent}% ${bar}
-💬 ${motiv.text}
-
 а ты сколько дней лета уже слил? 👀
 👇
 🔗 ${siteUrl}`;
