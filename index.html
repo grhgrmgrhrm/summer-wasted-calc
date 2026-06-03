@@ -346,6 +346,15 @@
         return { text: '😡 Ты вообще что себе думаешь? Всё лето ничего не делать?', color: 'text-red-400' };
     }
 
+    function pluralize(n, forms) {
+        let nAbs = Math.abs(n) % 100;
+        let n1 = nAbs % 10;
+        if (nAbs > 10 && nAbs < 20) return forms[2]; // дел / дней
+        if (n1 > 1 && n1 < 5) return forms[1];       // дела / дня
+        if (n1 === 1) return forms[0];               // дело / день
+        return forms[2];
+    }
+
     // ── Рендер ───────────────────────────────────────────────────
     function render() {
         autoMarkWasted();
@@ -360,11 +369,12 @@
         motivEl.className = `text-base sm:text-lg mt-2 italic opacity-90 ${motiv.color}`;
 
         // Оставшиеся дни
+        const dayLabel = pluralize(remaining, ['день', 'дня', 'дней']);
         document.getElementById('remaining-days').innerHTML = `
           <div class="inline-flex items-center gap-3 bg-slate-900 rounded-2xl px-5 sm:px-6 py-3">
             <div>
               <div class="text-3xl font-bold text-amber-300">${remaining}</div>
-              <div class="text-xs uppercase tracking-widest opacity-60 -mt-1">дней лета осталось</div>
+              <div class="text-xs uppercase tracking-widest opacity-60 -mt-1">${dayLabel} лета осталось</div>
             </div>
           </div>`;
 
@@ -439,15 +449,16 @@
             let dayClass = 'bg-slate-700';
             if (past) dayClass = dayData.wasted ? 'wasted' : 'productive';
             else if (isTodayDay) dayClass = taskCount > 0 ? 'today' : 'bg-slate-700';
+            const taskLabel = pluralize(taskCount, ['дело', 'дела', 'дел']);
 
             html += `
               <div class="${dayClass} ${!isTodayDay ? 'locked' : ''} rounded-xl p-4 transition-all">
                 <div class="flex justify-between items-center mb-3">
                   <div class="font-mono text-base sm:text-lg ${isTodayDay ? 'text-orange-400 font-bold' : ''}">
                     ${new Date(date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })}
-                    ${isTodayDay ? ' ← СЕГОДНЯ' : past ? ' (прошёл)' : ' (будет)'}
+                    ${isTodayDay ? ' ← СЕГОДНЯ. ДОБАВЬ АКТИВНОСТЬ!' : past ? ' (прошёл)' : ' (будет)'}
                   </div>
-                  <div class="text-sm opacity-75">${taskCount} дел</div>
+                  <div class="text-sm opacity-75">${taskCount} ${taskLabel}</div>
                 </div>
                 <div class="space-y-2 mb-4">
                   ${dayData.tasks.map((task, i) => `
