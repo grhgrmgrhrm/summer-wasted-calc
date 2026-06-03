@@ -20,8 +20,8 @@
     <meta property="og:title" content="☀️ Summer Wasted Calc">
     <meta property="og:description" content="Не дай лету уйти в проёб. Трекер 92 дней лета с мотивацией.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://grhgrmgrhrm.grhgrmgrhrm.github.io/summer-wasted-calc/">
-    <meta property="og:image" content="https://grhgrmgrhrm.grhgrmgrhrm.github.io/summer-wasted-calc/og-image.png">
+    <meta property="og:url" content="https://grhgrmgrhrm.github.io/summer-wasted-calc/">
+    <meta property="og:image" content="https://grhgrmgrhrm.github.io/summer-wasted-calc/og-image.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:locale" content="ru_RU">
@@ -30,7 +30,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="☀️ Summer Wasted Calc">
     <meta name="twitter:description" content="Не дай лету уйти в проёб. Трекер 92 дней лета с мотивацией.">
-    <meta name="twitter:image" content="https://grhgrmgrhrm.grhgrmgrhrm.github.io/summer-wasted-calc/og-image.png">
+    <meta name="twitter:image" content="https://grhgrmgrhrm.github.io/summer-wasted-calc/og-image.png">
 
     <!-- Яндекс.Метрика -->
     <script type="text/javascript">
@@ -39,15 +39,14 @@
             for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}
             k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
         (window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");
-
-        ym(XXXXXXXX, "init", {
+        ym(109612859, "init", {
             clickmap: true,
             trackLinks: true,
             accurateTrackBounce: true,
             webvisor: true
         });
     </script>
-    <noscript><div><img src="https://mc.yandex.ru/watch/XXXXXXXX" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    <noscript><div><img src="https://mc.yandex.ru/watch/109612859" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
@@ -86,7 +85,6 @@
                 <h2 class="text-lg sm:text-xl mb-4 flex items-center gap-2">
                     <i class="fa-solid fa-chart-simple"></i> Статистика
                 </h2>
-
                 <div id="remaining-days" class="mb-6 text-center"></div>
                 <div id="progress-section" class="mb-6"></div>
                 <div id="stats" class="space-y-4"></div>
@@ -258,11 +256,11 @@
     // ── Мотивация ────────────────────────────────────────────────
     function getMotivation(percent, completedDays) {
         if (completedDays === 0) return { text: 'Лето началось. Не облажайся.', color: 'text-slate-400' };
-        if (percent === 100) return { text: '🏆 ЛЕГЕНДА. Лето не проёбано.', color: 'text-yellow-400' };
-        if (percent >= 81)   return { text: '🔥 Ты красава. Почти идеальное лето.', color: 'text-green-400' };
-        if (percent >= 61)   return { text: '💪 Неплохо! Лето ещё не слито.', color: 'text-green-500' };
-        if (percent >= 41)   return { text: '😐 Уже что-то. Но можешь лучше.', color: 'text-yellow-400' };
-        if (percent >= 21)   return { text: '😬 Маловато будет. Соберись.', color: 'text-orange-400' };
+        if (percent === 100)   return { text: '🏆 ЛЕГЕНДА. Лето не проёбано.', color: 'text-yellow-400' };
+        if (percent >= 81)     return { text: '🔥 Ты красава. Почти идеальное лето.', color: 'text-green-400' };
+        if (percent >= 61)     return { text: '💪 Неплохо! Лето ещё не слито.', color: 'text-green-500' };
+        if (percent >= 41)     return { text: '😐 Уже что-то. Но можешь лучше.', color: 'text-yellow-400' };
+        if (percent >= 21)     return { text: '😬 Маловато будет. Соберись.', color: 'text-orange-400' };
         return { text: '😡 Ты вообще что себе думаешь? Всё лето ничего не делать?', color: 'text-red-400' };
     }
 
@@ -289,7 +287,7 @@
             </div>
           </div>`;
 
-        // Прогрессбар: красный фон, зелёный заполняет по продуктивным дням
+        // Прогрессбар
         const greenWidth = s.productivePercent;
         document.getElementById('progress-section').innerHTML = `
           <div class="mb-2 text-sm opacity-75 text-center sm:text-left">Прогресс лета (92 дня)</div>
@@ -370,12 +368,6 @@
         document.getElementById('days-list').innerHTML = html;
     }
 
-    function getEmojiBar(percent) {
-        const filled = Math.round(percent / 10);
-        const empty = 10 - filled;
-        return '🟩'.repeat(filled) + '⬜'.repeat(empty);
-    }
-
     function getShareText(s) {
         const siteUrl = 'https://grhgrmgrhrm.github.io/summer-wasted-calc/';
         return `☀️ Моё лето 2026
@@ -417,7 +409,7 @@
             }
         ];
 
-        const html = buttons.map(b => `
+        document.getElementById('share-buttons').innerHTML = buttons.map(b => `
             <a ${b.action === 'copy'
             ? `href="#" onclick="copyForInstagram(); return false;"`
             : `href="${b.url}" target="_blank" rel="noopener"`}
@@ -426,8 +418,6 @@
                 <span>${b.label}</span>
                 ${b.action === 'copy' ? '<span class="ml-auto text-xs opacity-70">скопировать</span>' : ''}
             </a>`).join('');
-
-        document.getElementById('share-buttons').innerHTML = html;
     }
 
     function copyForInstagram() {
