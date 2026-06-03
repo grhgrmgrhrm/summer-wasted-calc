@@ -423,6 +423,9 @@
               </div>`;
         }
 
+        const completedDaysLabel = pluralize(s.totalCompletedDays, ['день', 'дня', 'дней']);
+        const totalTasksLabel = pluralize(s.totalTasks, ['задача', 'задачи', 'задач']);
+
         document.getElementById('stats').innerHTML = `
           <div class="flex justify-between items-center p-4 bg-red-900/30 rounded-xl">
             <span class="text-red-400">Потеряно дней:</span>
@@ -433,8 +436,8 @@
             <span class="text-3xl font-bold text-green-400">${s.productive}</span>
           </div>
           <div class="text-center text-sm opacity-70 mt-2">
-            Завершённых дней: <span class="font-bold">${s.totalCompletedDays}</span> / 92<br>
-            Добавлено задач: <span class="font-bold">${s.totalTasks}</span>
+            Завершённых дней: <span class="font-bold">${s.totalCompletedDays}</span> ${completedDaysLabel}<br>
+            Добавлено задач: <span class="font-bold">${s.totalTasks}</span> ${totalTasksLabel}
           </div>
           ${categoriesHtml}`;
 
