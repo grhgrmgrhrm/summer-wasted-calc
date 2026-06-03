@@ -113,6 +113,20 @@
     </button>
 </div>
 
+<div class="max-w-4xl mx-auto px-4 sm:px-6 py-4 border-t border-slate-700/30 flex flex-wrap justify-center gap-6">
+    <!-- Кнопка Экспорта -->
+    <button onclick="exportData()" class="text-slate-400 hover:text-indigo-400 text-sm transition-colors flex items-center gap-2">
+        <i class="fa-solid fa-file-export"></i> Сохранить бэкап
+    </button>
+
+    <!-- Кнопка Импорта (скрытый инпут + лейбл) -->
+    <label class="text-slate-400 hover:text-emerald-400 text-sm transition-colors flex items-center gap-2 cursor-pointer">
+        <i class="fa-solid fa-file-import"></i> Восстановить данные
+        <input type="file" id="importFile" class="hidden" accept=".json" onchange="importData(event)">
+    </label>
+
+</div>
+
 <footer class="mt-auto border-t border-slate-700/50 bg-slate-900/80 backdrop-blur-sm">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 py-6">
         <h2 class="text-lg sm:text-xl mb-4 flex items-center gap-2 text-white">
@@ -156,6 +170,8 @@
         </button>
     </div>
 </div>
+
+
 
 <script>
     // ── Service Worker + уведомления ──────────────────────────────
@@ -641,6 +657,107 @@
     modal.addEventListener('click', (e) => {
         if (e.target === modal) closeModal();
     });
+
+    // ЭКСПОРТ ДАННЫХ
+    function exportData() {
+        // Получаем текущие данные из localStorage
+        const rawData = localStorage.getItem(NEW_KEY);
+        if (!rawData || rawData === '{}') {
+            alert('Пока нечего сохранять. Добавь хотя бы одно дело!');
+            return;
+        }
+
+        // Создаем Blob (файл) с данными
+        const blob = new Blob([rawData], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+
+        // Создаем временную ссылку для скачивания
+        const a = document.createElement('a');
+        const date = new Date().toISOString().split('T')[0];
+        a.href = url;
+        a.download = `summer_wasted_backup_${date}.json`;
+
+        // Имитируем клик
+        document.body.appendChild(a);
+        a.click();
+
+        // Удаляем временные элементы
+        setTimeout(() => {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }, 0);
+    }
+
+
+    // Функция валидации структуры данных
+    function isValidBackup(data) {
+        // 1. Проверяем, что это объект и не null
+        if (typeof data !== 'object' || data === null || Array.isArray(data)) return false;
+
+        const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+
+        // Получаем все ключи (даты)
+        const keys = Object.keys(data);
+
+        // Если файл пустой, но это объект — технически это валидно, но предупредим позже
+        if (keys.length === 0) return true;
+
+        // Проверяем каждую запись
+        for (const date of keys) {
+            // Проверка формата даты (YYYY-MM-DD)
+            if (!dateRegex.test(date)) return false;
+
+            const dayEntry = data[date];
+
+            // Проверка наличия массива задач (даже если он пустой)
+            if (!dayEntry || !Array.isArray(dayEntry.tasks)) return false;
+
+            // Проверка самих задач (если они есть)
+            for (const task of dayEntry.tasks) {
+                if (typeof task.text !== 'string') return false;
+                // Поле category или done могут отсутствовать в старых версиях,
+                // поэтому проверяем только критичное — текст.
+            }
+        }
+
+        return true;
+    }
+
+    // ИМПОРТ ДАННЫХ (обновленный)
+    function importData(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const importedData = JSON.parse(e.target.result);
+
+                // ЗАПУСКАЕМ ПРОВЕРКУ
+                if (!isValidBackup(importedData)) {
+                    alert('Ошибка: Файл имеет неверную структуру и не может быть прочитан.');
+                    return;
+                }
+
+                if (Object.keys(importedData).length === 0) {
+                    alert('Внимание: Вы пытаетесь импортировать пустой файл.');
+                    return;
+                }
+
+                // Подтверждение
+                if (confirm('Файл прошел проверку. Заменить текущий прогресс данными из бэкапа?')) {
+                    localStorage.setItem(NEW_KEY, JSON.stringify(importedData));
+                    alert('Данные успешно восстановлены!');
+                    location.reload();
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Ошибка: Файл не является корректным JSON.');
+            }
+        };
+        reader.readAsText(file);
+        event.target.value = '';
+    }
 </script>
 </body>
 </html>
