@@ -1,4 +1,4 @@
-const CACHE_NAME = 'proeb-summer-v2';
+const CACHE_NAME = 'summer-tracker-v3';
 const ASSETS = [
   './',
   './index.html',
@@ -35,7 +35,7 @@ self.addEventListener('fetch', e => {
 self.addEventListener('message', e => {
   if (e.data && e.data.type === 'SHOW_NOTIFICATION') {
     self.registration.showNotification('☀️ Summer Wasted Calc', {
-      body: 'Эй, добавь что сделал сегодня — не дай дню уйти в проёб!',
+      body: 'Эй, добавь что сделал сегодня — не дай дню сгореть впустую!',
       icon: './icon-192.png',
       badge: './icon-192.png',
       tag: 'daily-reminder',

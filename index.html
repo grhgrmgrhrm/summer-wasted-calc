@@ -19,7 +19,7 @@
 
     <!-- Open Graph -->
     <meta property="og:title" content="☀️ Summer Wasted Calc">
-    <meta property="og:description" content="Не дай лету уйти в проёб. Трекер 92 дней лета с мотивацией.">
+    <meta property="og:description" content="Не дай лету сгореть впустую. Трекер 92 дней лета с мотивацией.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://grhgrmgrhrm.github.io/summer-wasted-calc/">
     <meta property="og:image" content="https://grhgrmgrhrm.github.io/summer-wasted-calc/og-image.png">
@@ -30,7 +30,7 @@
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="☀️ Summer Wasted Calc">
-    <meta name="twitter:description" content="Не дай лету уйти в проёб. Трекер 92 дней лета с мотивацией.">
+    <meta name="twitter:description" content="Не дай лету сгореть впустую. Трекер 92 дней лета с мотивацией.">
     <meta name="twitter:image" content="https://grhgrmgrhrm.github.io/summer-wasted-calc/og-image.png">
 
     <!-- Яндекс.Метрика -->
@@ -75,8 +75,8 @@
 <body class="min-h-screen text-white pb-12">
 <div class="max-w-4xl mx-auto p-4 sm:p-6">
     <header class="text-center mb-8 sm:mb-10">
-        <h1 class="text-4xl sm:text-5xl font-bold mb-2">Счётчик проёбанного лета ☀️</h1>
-        <p class="text-lg sm:text-xl text-orange-400">Не дай лету уйти в проёб</p>
+        <h1 class="text-4xl sm:text-5xl font-bold mb-2">Счётчик потерянного лета ☀️</h1>
+        <p class="text-lg sm:text-xl text-orange-400">Не дай лету сгореть впустую</p>
         <p id="motivation" class="text-base sm:text-lg mt-2 italic opacity-90"></p>
     </header>
 
@@ -163,10 +163,22 @@
     const summerStart = new Date('2026-06-01');
     const summerEnd = new Date('2026-08-31');
 
-    let data = JSON.parse(localStorage.getItem('proebSummer2026')) || {};
+    const OLD_KEY = 'proebSummer2026';
+    const NEW_KEY = 'summerTracker2026';
+    let data = JSON.parse(localStorage.getItem(NEW_KEY));
+    if (!data) {
+        const oldData = localStorage.getItem(OLD_KEY);
+        if (oldData) {
+            data = JSON.parse(oldData);
+            localStorage.setItem(NEW_KEY, JSON.stringify(data));
+            localStorage.removeItem(OLD_KEY);
+        } else {
+            data = {};
+        }
+    }
 
     function saveData() {
-        localStorage.setItem('proebSummer2026', JSON.stringify(data));
+        localStorage.setItem(NEW_KEY, JSON.stringify(data));
     }
 
     function getDays() {
@@ -257,7 +269,7 @@
     // ── Мотивация ────────────────────────────────────────────────
     function getMotivation(percent, completedDays) {
         if (completedDays === 0) return { text: 'Лето началось. Не облажайся.', color: 'text-slate-400' };
-        if (percent === 100)   return { text: '🏆 ЛЕГЕНДА. Лето не проёбано.', color: 'text-yellow-400' };
+        if (percent === 100)   return { text: '🏆 ЛЕГЕНДА. Лето не потеряно.', color: 'text-yellow-400' };
         if (percent >= 81)     return { text: '🔥 Ты красава. Почти идеальное лето.', color: 'text-green-400' };
         if (percent >= 61)     return { text: '💪 Неплохо! Лето ещё не слито.', color: 'text-green-500' };
         if (percent >= 41)     return { text: '😐 Уже что-то. Но можешь лучше.', color: 'text-yellow-400' };
@@ -301,7 +313,7 @@
               <span class="text-green-400/70">продуктивных</span>
             </div>
             <div class="flex items-center gap-2">
-              <span class="text-red-400/70">проёбано</span>
+              <span class="text-red-400/70">потеряно</span>
               <span class="text-red-400 font-bold">${s.wasted}</span>
             </div>
           </div>`;
@@ -309,7 +321,7 @@
         // Статистика
         document.getElementById('stats').innerHTML = `
           <div class="flex justify-between items-center p-4 bg-red-900/30 rounded-xl">
-            <span class="text-red-400">Проёбано дней:</span>
+            <span class="text-red-400">Потеряно дней:</span>
             <span class="text-3xl font-bold text-red-400">${s.wasted}</span>
           </div>
           <div class="flex justify-between items-center p-4 bg-green-900/30 rounded-xl">
@@ -373,7 +385,7 @@
         const siteUrl = 'https://grhgrmgrhrm.github.io/summer-wasted-calc/';
         return `☀️ Моё лето 2026
 ─────────────────────
-а ты сколько дней лета уже слил? 👀
+а ты сколько дней лета уже потерял? 👀
 👇
 🔗 ${siteUrl}`;
     }
