@@ -107,6 +107,12 @@
     </div>
 </div>
 
+<div class="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex justify-center">
+    <button onclick="openModal()" class="text-slate-500 hover:text-orange-400 text-sm transition-colors flex items-center gap-2">
+        <i class="fa-solid fa-circle-question"></i> Как пользоваться счётчиком?
+    </button>
+</div>
+
 <footer class="mt-auto border-t border-slate-700/50 bg-slate-900/80 backdrop-blur-sm">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 py-6">
         <h2 class="text-lg sm:text-xl mb-4 flex items-center gap-2 text-white">
@@ -115,6 +121,41 @@
         <div id="share-buttons" class="flex flex-col md:flex-row flex-wrap gap-2"></div>
     </div>
 </footer>
+
+<!-- Модальное окно инструкций -->
+<div id="modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-slate-800 border border-slate-700 w-full max-w-md rounded-3xl p-6 shadow-2xl transform scale-95 transition-transform duration-300">
+        <div class="text-center mb-6">
+            <div class="text-5xl mb-4">☀️</div>
+            <h2 class="text-2xl font-bold text-white">Как это работает?</h2>
+        </div>
+
+        <div class="space-y-4 text-slate-300 text-sm sm:text-base">
+            <div class="flex gap-4">
+                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center text-white font-bold">1</div>
+                <p>Каждый день у тебя есть шанс сделать лето лучше. Добавляй задачи в блок <span class="text-orange-400 font-semibold">«СЕГОДНЯ»</span>.</p>
+            </div>
+            <div class="flex gap-4">
+                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-green-600 flex items-center justify-center text-white font-bold">2</div>
+                <p>Если ты добавил хотя бы одно дело, день станет <span class="text-green-500 font-semibold">продуктивным</span> (зеленым).</p>
+            </div>
+            <div class="flex gap-4">
+                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-red-800 flex items-center justify-center text-white font-bold">3</div>
+                <p>Если за день не сделано ничего — он <span class="text-red-500 font-semibold">сгорает</span> (становится красным) навсегда.</p>
+            </div>
+            <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700 mt-2">
+                <p class="text-xs italic opacity-80">
+                    <i class="fa-solid fa-circle-info mr-1"></i>
+                    Совет: Установи приложение на главный экран (PWA), чтобы не забывать записывать дела вечером.
+                </p>
+            </div>
+        </div>
+
+        <button onclick="closeModal()" class="w-full mt-8 bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl transition-colors">
+            Понятно, погнали!
+        </button>
+    </div>
+</div>
 
 <script>
     // ── Service Worker + уведомления ──────────────────────────────
@@ -563,6 +604,43 @@
 
     render();
     renderShareButtons();
+
+    const modal = document.getElementById('modal');
+    const modalContent = modal.querySelector('div');
+
+    function openModal() {
+        modal.classList.remove('hidden');
+        // Небольшая задержка для анимации
+        setTimeout(() => {
+            modal.classList.add('opacity-100');
+            modalContent.classList.remove('scale-95');
+            modalContent.classList.add('scale-100');
+        }, 10);
+    }
+
+    function closeModal() {
+        modal.classList.remove('opacity-100');
+        modalContent.classList.remove('scale-100');
+        modalContent.classList.add('scale-95');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
+
+        // Запоминаем, что пользователь видел инструкцию
+        localStorage.setItem('instructionsShown', 'true');
+    }
+
+    // Автооткрытие при первом входе
+    window.addEventListener('DOMContentLoaded', () => {
+        if (!localStorage.getItem('instructionsShown')) {
+            setTimeout(openModal, 1000); // Открываем через секунду после загрузки
+        }
+    });
+
+    // Закрытие по клику на фон
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
 </script>
 </body>
 </html>
