@@ -13,12 +13,28 @@
     <meta name="apple-mobile-web-app-title" content="Summer Wasted Calc">
     <link rel="apple-touch-icon" href="icon-192.png">
 
+    <!-- Open Graph -->
+    <meta property="og:title" content="☀️ Summer Wasted Calc">
+    <meta property="og:description" content="Не дай лету уйти в проёб. Трекер 92 дней лета с мотивацией.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://grhgrmgrhrm.grhgrmgrhrm.github.io/summer-wasted-calc/">
+    <meta property="og:image" content="https://grhgrmgrhrm.grhgrmgrhrm.github.io/summer-wasted-calc/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:locale" content="ru_RU">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="☀️ Summer Wasted Calc">
+    <meta name="twitter:description" content="Не дай лету уйти в проёб. Трекер 92 дней лета с мотивацией.">
+    <meta name="twitter:image" content="https://grhgrmgrhrm.grhgrmgrhrm.github.io/summer-wasted-calc/og-image.png">
+
     <!-- Яндекс.Метрика -->
     <script type="text/javascript">
         (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-            m[i].l=1*new Date();
-            for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}
-            k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+        m[i].l=1*new Date();
+        for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
         (window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");
 
         ym(XXXXXXXX, "init", {
@@ -398,8 +414,8 @@
 
         const html = buttons.map(b => `
             <a ${b.action === 'copy'
-            ? `href="#" onclick="copyForInstagram(); return false;"`
-            : `href="${b.url}" target="_blank" rel="noopener"`}
+                ? `href="#" onclick="copyForInstagram(); return false;"`
+                : `href="${b.url}" target="_blank" rel="noopener"`}
                class="${b.color} flex items-center gap-3 px-4 py-3 rounded-xl text-white font-medium transition-all w-full">
                 <i class="${b.icon} text-lg w-5 text-center"></i>
                 <span>${b.label}</span>

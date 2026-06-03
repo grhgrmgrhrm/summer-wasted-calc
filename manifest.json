@@ -2,7 +2,7 @@
   "name": "Summer Wasted Calc",
   "short_name": "SummerCalc",
   "description": "Не дай лету уйти в проёб",
-  "start_url": "./index.html",
+  "start_url": "/summer-wasted-calc/index.html",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#0f172a",
