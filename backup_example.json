@@ -1,0 +1,119 @@
+{
+  "2026-06-01": {
+    "tasks": [
+      { "text": "читал книги", "done": true, "category": "hobby" }
+    ],
+    "wasted": false
+  },
+  "2026-06-02": {
+    "tasks": [
+      { "text": "играл в футбол", "done": true, "category": "sport" }
+    ],
+    "wasted": false
+  },
+  "2026-06-03": {
+    "tasks": [
+      { "text": "катался на велосипеде", "done": true, "category": "sport" }
+    ],
+    "wasted": false
+  },
+  "2026-06-04": {
+    "tasks": [
+      { "text": "планировал лето", "done": true, "category": "other" }
+    ],
+    "wasted": false
+  },
+  "2026-06-05": {
+    "tasks": [
+      { "text": "читал книги", "done": true, "category": "other" }
+    ],
+    "wasted": false
+  },
+  "2026-06-06": { "tasks": [], "wasted": false },
+  "2026-06-07": { "tasks": [], "wasted": false },
+  "2026-06-08": { "tasks": [], "wasted": false },
+  "2026-06-09": { "tasks": [], "wasted": false },
+  "2026-06-10": { "tasks": [], "wasted": false },
+  "2026-06-11": { "tasks": [], "wasted": false },
+  "2026-06-12": { "tasks": [], "wasted": false },
+  "2026-06-13": { "tasks": [], "wasted": false },
+  "2026-06-14": { "tasks": [], "wasted": false },
+  "2026-06-15": { "tasks": [], "wasted": false },
+  "2026-06-16": { "tasks": [], "wasted": false },
+  "2026-06-17": { "tasks": [], "wasted": false },
+  "2026-06-18": { "tasks": [], "wasted": false },
+  "2026-06-19": { "tasks": [], "wasted": false },
+  "2026-06-20": { "tasks": [], "wasted": false },
+  "2026-06-21": { "tasks": [], "wasted": false },
+  "2026-06-22": { "tasks": [], "wasted": false },
+  "2026-06-23": { "tasks": [], "wasted": false },
+  "2026-06-24": { "tasks": [], "wasted": false },
+  "2026-06-25": { "tasks": [], "wasted": false },
+  "2026-06-26": { "tasks": [], "wasted": false },
+  "2026-06-27": { "tasks": [], "wasted": false },
+  "2026-06-28": { "tasks": [], "wasted": false },
+  "2026-06-29": { "tasks": [], "wasted": false },
+  "2026-06-30": { "tasks": [], "wasted": false },
+  "2026-07-01": { "tasks": [], "wasted": false },
+  "2026-07-02": { "tasks": [], "wasted": false },
+  "2026-07-03": { "tasks": [], "wasted": false },
+  "2026-07-04": { "tasks": [], "wasted": false },
+  "2026-07-05": { "tasks": [], "wasted": false },
+  "2026-07-06": { "tasks": [], "wasted": false },
+  "2026-07-07": { "tasks": [], "wasted": false },
+  "2026-07-08": { "tasks": [], "wasted": false },
+  "2026-07-09": { "tasks": [], "wasted": false },
+  "2026-07-10": { "tasks": [], "wasted": false },
+  "2026-07-11": { "tasks": [], "wasted": false },
+  "2026-07-12": { "tasks": [], "wasted": false },
+  "2026-07-13": { "tasks": [], "wasted": false },
+  "2026-07-14": { "tasks": [], "wasted": false },
+  "2026-07-15": { "tasks": [], "wasted": false },
+  "2026-07-16": { "tasks": [], "wasted": false },
+  "2026-07-17": { "tasks": [], "wasted": false },
+  "2026-07-18": { "tasks": [], "wasted": false },
+  "2026-07-19": { "tasks": [], "wasted": false },
+  "2026-07-20": { "tasks": [], "wasted": false },
+  "2026-07-21": { "tasks": [], "wasted": false },
+  "2026-07-22": { "tasks": [], "wasted": false },
+  "2026-07-23": { "tasks": [], "wasted": false },
+  "2026-07-24": { "tasks": [], "wasted": false },
+  "2026-07-25": { "tasks": [], "wasted": false },
+  "2026-07-26": { "tasks": [], "wasted": false },
+  "2026-07-27": { "tasks": [], "wasted": false },
+  "2026-07-28": { "tasks": [], "wasted": false },
+  "2026-07-29": { "tasks": [], "wasted": false },
+  "2026-07-30": { "tasks": [], "wasted": false },
+  "2026-07-31": { "tasks": [], "wasted": false },
+  "2026-08-01": { "tasks": [], "wasted": false },
+  "2026-08-02": { "tasks": [], "wasted": false },
+  "2026-08-03": { "tasks": [], "wasted": false },
+  "2026-08-04": { "tasks": [], "wasted": false },
+  "2026-08-05": { "tasks": [], "wasted": false },
+  "2026-08-06": { "tasks": [], "wasted": false },
+  "2026-08-07": { "tasks": [], "wasted": false },
+  "2026-08-08": { "tasks": [], "wasted": false },
+  "2026-08-09": { "tasks": [], "wasted": false },
+  "2026-08-10": { "tasks": [], "wasted": false },
+  "2026-08-11": { "tasks": [], "wasted": false },
+  "2026-08-12": { "tasks": [], "wasted": false },
+  "2026-08-13": { "tasks": [], "wasted": false },
+  "2026-08-14": { "tasks": [], "wasted": false },
+  "2026-08-15": { "tasks": [], "wasted": false },
+  "2026-08-16": { "tasks": [], "wasted": false },
+  "2026-08-17": { "tasks": [], "wasted": false },
+  "2026-08-18": { "tasks": [], "wasted": false },
+  "2026-08-19": { "tasks": [], "wasted": false },
+  "2026-08-20": { "tasks": [], "wasted": false },
+  "2026-08-21": { "tasks": [], "wasted": false },
+  "2026-08-22": { "tasks": [], "wasted": false },
+  "2026-08-23": { "tasks": [], "wasted": false },
+  "2026-08-24": { "tasks": [], "wasted": false },
+  "2026-08-25": { "tasks": [], "wasted": false },
+  "2026-08-26": { "tasks": [], "wasted": false },
+  "2026-08-27": { "tasks": [], "wasted": false },
+  "2026-08-28": { "tasks": [], "wasted": false },
+  "2026-08-29": { "tasks": [], "wasted": false },
+  "2026-08-30": { "tasks": [], "wasted": false },
+  "2026-08-31": { "tasks": [], "wasted": false }
+}
