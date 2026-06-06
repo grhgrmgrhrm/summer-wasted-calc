@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Summer Wasted Calc</title>
+    <title>Summer Tracker</title>
 
     <!-- PWA -->
     <link rel="manifest" href="manifest.json">
@@ -11,14 +11,14 @@
     <meta name="color-scheme" content="dark">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Summer Wasted Calc">
+    <meta name="apple-mobile-web-app-title" content="Summer Tracker">
     <link rel="apple-touch-icon" href="icon-192.png">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
     <link rel="shortcut icon" href="favicon.ico">
 
     <!-- Open Graph -->
-    <meta property="og:title" content="☀️ Summer Wasted Calc">
+    <meta property="og:title" content="☀️ Summer Tracker">
     <meta property="og:description" content="Не дай лету сгореть впустую. Трекер 92 дней лета с мотивацией.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://summertracker.online/">
@@ -29,11 +29,11 @@
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="☀️ Summer Wasted Calc">
+    <meta name="twitter:title" content="☀️ Summer Tracker">
     <meta name="twitter:description" content="Не дай лету сгореть впустую. Трекер 92 дней лета с мотивацией.">
     <meta name="twitter:image" content="https://summertracker.online/og-image.png">
 
-    <!-- Яндекс.Метрика -->
+    <!-- Yandex.Metrica -->
     <script type="text/javascript">
         (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
             m[i].l=1*new Date();
@@ -114,17 +114,14 @@
 </div>
 
 <div class="max-w-4xl mx-auto px-4 sm:px-6 py-4 border-t border-slate-700/30 flex flex-wrap justify-center gap-6">
-    <!-- Кнопка Экспорта -->
     <button onclick="exportData()" class="text-slate-400 hover:text-indigo-400 text-sm transition-colors flex items-center gap-2">
         <i class="fa-solid fa-file-export"></i> Сохранить бэкап
     </button>
 
-    <!-- Кнопка Импорта (скрытый инпут + лейбл) -->
     <label class="text-slate-400 hover:text-emerald-400 text-sm transition-colors flex items-center gap-2 cursor-pointer">
         <i class="fa-solid fa-file-import"></i> Восстановить данные
         <input type="file" id="importFile" class="hidden" accept=".json" onchange="importData(event)">
     </label>
-
 </div>
 
 <footer class="mt-auto border-t border-slate-700/50 bg-slate-900/80 backdrop-blur-sm">
@@ -136,7 +133,7 @@
     </div>
 </footer>
 
-<!-- Модальное окно инструкций -->
+<!-- Modal -->
 <div id="modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
     <div class="bg-slate-800 border border-slate-700 w-full max-w-md rounded-3xl p-6 shadow-2xl transform scale-95 transition-transform duration-300">
         <div class="text-center mb-6">
@@ -171,10 +168,8 @@
     </div>
 </div>
 
-
-
 <script>
-    // ── Service Worker + уведомления ──────────────────────────────
+    // ── Service Worker & Notifications ──────────────────────────────
     let swRegistration = null;
 
     if ('serviceWorker' in navigator) {
@@ -211,7 +206,7 @@
         if (lastScheduled === targetStr) return;
         localStorage.setItem('notifScheduledFor', targetStr);
 
-        console.log(`Уведомление через ${Math.round(msUntilNotif / 60000)} мин`);
+        console.log(`Notification scheduled in ${Math.round(msUntilNotif / 60000)} minutes`);
 
         setTimeout(async () => {
             const sw = await navigator.serviceWorker.ready;
@@ -221,17 +216,15 @@
         }, msUntilNotif);
     }
 
-    // ── Данные ───────────────────────────────────────────────────
+    // ── Data & Constants ─────────────────────────────────────────────
     const TOTAL_SUMMER_DAYS = 92;
     const currentYear = new Date().getFullYear();
-    // 2. Начало лета: 1 июня, 00:00:00
     const summerStart = new Date(currentYear, 5, 1, 0, 0, 0);
-
-    // 3. Конец лета: 31 августа, 23:59:59
     const summerEnd = new Date(currentYear, 7, 31, 23, 59, 59, 999);
 
     const OLD_KEY = 'proebSummer2026';
     const NEW_KEY = 'summerTracker2026';
+
     let data = JSON.parse(localStorage.getItem(NEW_KEY));
     if (!data) {
         const oldData = localStorage.getItem(OLD_KEY);
@@ -256,6 +249,7 @@
         hobby: { label: 'Хобби', emoji: '🎨', color: 'bg-purple-600/30 text-purple-400 border-purple-500/50', barColor: 'bg-purple-500' },
         other: { label: 'Разное', emoji: '✨', color: 'bg-slate-600/30 text-slate-400 border-slate-500/50', barColor: 'bg-slate-500' }
     };
+
     let selectedCategory = 'other';
 
     function selectCategory(key) {
@@ -281,12 +275,9 @@
 
     function getDays() {
         let days = [];
-        // Начинаем с 1 июня
         let current = new Date(summerStart.getFullYear(), summerStart.getMonth(), summerStart.getDate());
 
-        // Пока не перешагнули 31 августа
         while (current <= summerEnd) {
-            // Используем новую функцию вместо .toISOString()
             days.push(getLocalDateString(current));
             current.setDate(current.getDate() + 1);
         }
@@ -303,9 +294,7 @@
 
     function getRemainingDays() {
         const now = new Date();
-
         if (now < summerStart) return TOTAL_SUMMER_DAYS;
-
         if (now > summerEnd) return 0;
 
         const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -317,11 +306,34 @@
         return TOTAL_SUMMER_DAYS - daysPassed;
     }
 
+    // ── Streak Calculation ───────────────────────────────────────────
+    function calculateStreak() {
+        const days = getDays();
+        let streak = 0;
+        const todayStr = getLocalDateString(new Date());
+
+        // Go backwards from today
+        for (let i = days.length - 1; i >= 0; i--) {
+            const date = days[i];
+            if (date > todayStr) continue; // future days
+
+            const dayData = data[date] || { tasks: [] };
+            if (dayData.tasks && dayData.tasks.length > 0) {
+                streak++;
+            } else {
+                break; // streak is broken
+            }
+        }
+        return streak;
+    }
+
     function autoMarkWasted() {
         const days = getDays();
-        const todayStr = getLocalDateString(new Date()); // исправлено здесь
+        const todayStr = getLocalDateString(new Date());
+
         days.forEach(date => {
             if (!data[date]) data[date] = { tasks: [], wasted: false };
+
             if (isPast(date)) {
                 data[date].wasted = data[date].tasks.length === 0;
             } else if (date === todayStr) {
@@ -343,8 +355,10 @@
         const input = document.getElementById(`input-${date}`);
         const text = input.value.trim();
         if (!text) return;
+
         if (!data[date]) data[date] = { tasks: [], wasted: false };
         data[date].tasks.push({ text, done: true, category: selectedCategory });
+
         input.value = '';
         selectedCategory = 'other';
         saveData();
@@ -362,7 +376,7 @@
 
     function calculateStats() {
         const days = getDays();
-        const todayStr = new Date().toISOString().split('T')[0];
+        const todayStr = getLocalDateString(new Date());
         const completedDays = days.filter(date => date < todayStr);
 
         let wasted = 0, productive = 0, totalTasks = 0;
@@ -375,24 +389,25 @@
 
         let categoryStats = {};
         Object.keys(CATEGORIES).forEach(k => categoryStats[k] = 0);
+
         days.forEach(date => {
             const d = data[date];
             if (d && d.tasks) {
                 d.tasks.forEach(task => {
                     const cat = task.category || 'other';
-                    if (categoryStats[cat] !== undefined) {
-                        categoryStats[cat]++;
-                    }
+                    if (categoryStats[cat] !== undefined) categoryStats[cat]++;
                 });
             }
         });
 
         const totalCompletedDays = completedDays.length;
         const productivePercent = Math.round((productive / TOTAL_SUMMER_DAYS) * 100);
-        return { wasted, productive, totalCompletedDays, productivePercent, totalTasks, categoryStats };
+        const streak = calculateStreak();
+
+        return { wasted, productive, totalCompletedDays, productivePercent, totalTasks, categoryStats, streak };
     }
 
-    // ── Мотивация ────────────────────────────────────────────────
+    // ── Motivation ───────────────────────────────────────────────────
     function getMotivation(percent, completedDays) {
         if (completedDays === 0) return { text: 'Лето началось. Не облажайся.', color: 'text-slate-400' };
         if (percent === 100)   return { text: '🏆 ЛЕГЕНДА. Лето не потеряно.', color: 'text-yellow-400' };
@@ -406,26 +421,26 @@
     function pluralize(n, forms) {
         let nAbs = Math.abs(n) % 100;
         let n1 = nAbs % 10;
-        if (nAbs > 10 && nAbs < 20) return forms[2]; // дел / дней
-        if (n1 > 1 && n1 < 5) return forms[1];       // дела / дня
-        if (n1 === 1) return forms[0];               // дело / день
+        if (nAbs > 10 && nAbs < 20) return forms[2];
+        if (n1 > 1 && n1 < 5) return forms[1];
+        if (n1 === 1) return forms[0];
         return forms[2];
     }
 
-    // ── Рендер ───────────────────────────────────────────────────
+    // ── Render ───────────────────────────────────────────────────────
     function render() {
         autoMarkWasted();
 
         const s = calculateStats();
         const remaining = getRemainingDays();
 
-        // Мотивация
+        // Motivation
         const motiv = getMotivation(s.productivePercent, s.totalCompletedDays);
         const motivEl = document.getElementById('motivation');
         motivEl.textContent = motiv.text;
         motivEl.className = `text-base sm:text-lg mt-2 italic opacity-90 ${motiv.color}`;
 
-        // Оставшиеся дни
+        // Remaining days
         const dayLabel = pluralize(remaining, ['день', 'дня', 'дней']);
         document.getElementById('remaining-days').innerHTML = `
           <div class="inline-flex items-center gap-3 bg-slate-900 rounded-2xl px-5 sm:px-6 py-3">
@@ -435,7 +450,7 @@
             </div>
           </div>`;
 
-        // Прогрессбар
+        // Progress bar
         const greenWidth = s.productivePercent;
         document.getElementById('progress-section').innerHTML = `
           <div class="mb-2 text-sm opacity-75 text-center sm:text-left">Прогресс лета (92 дня)</div>
@@ -453,7 +468,7 @@
             </div>
           </div>`;
 
-        // Статистика
+        // Stats
         let categoriesHtml = '';
         const totalCatTasks = Object.values(s.categoryStats).reduce((a, b) => a + b, 0);
         if (totalCatTasks > 0) {
@@ -462,9 +477,9 @@
                 <div class="text-sm opacity-75 mb-3 text-left">Распределение по сферам:</div>
                 <div class="space-y-2">
                   ${Object.entries(CATEGORIES).map(([key, cat]) => {
-                      const count = s.categoryStats[key] || 0;
-                      const percent = totalCatTasks > 0 ? Math.round((count / totalCatTasks) * 100) : 0;
-                      return `
+                const count = s.categoryStats[key] || 0;
+                const percent = totalCatTasks > 0 ? Math.round((count / totalCatTasks) * 100) : 0;
+                return `
                         <div>
                           <div class="flex justify-between text-xs mb-1">
                             <span class="opacity-95">${cat.emoji} ${cat.label}</span>
@@ -473,15 +488,15 @@
                           <div class="h-1.5 bg-slate-900 rounded-full overflow-hidden">
                             <div class="h-full ${cat.barColor} transition-all duration-500" style="width: ${percent}%;"></div>
                           </div>
-                        </div>
-                      `;
-                  }).join('')}
+                        </div>`;
+            }).join('')}
                 </div>
               </div>`;
         }
 
         const completedDaysLabel = pluralize(s.totalCompletedDays, ['день', 'дня', 'дней']);
         const totalTasksLabel = pluralize(s.totalTasks, ['задача', 'задачи', 'задач']);
+        const streakLabel = pluralize(s.streak, ['день', 'дня', 'дней']);
 
         document.getElementById('stats').innerHTML = `
           <div class="flex justify-between items-center p-4 bg-red-900/30 rounded-xl">
@@ -492,13 +507,18 @@
             <span class="text-green-400">Продуктивных дней:</span>
             <span class="text-3xl font-bold text-green-400">${s.productive}</span>
           </div>
+          ${s.streak > 0 ? `
+          <div class="flex justify-between items-center p-4 bg-orange-900/30 rounded-xl">
+            <span class="text-orange-400">Текущая серия:</span>
+            <span class="text-3xl font-bold text-orange-400">${s.streak} ${streakLabel} 🔥</span>
+          </div>` : ''}
           <div class="text-center text-sm opacity-70 mt-2">
             Завершённых дней: <span class="font-bold">${s.totalCompletedDays}</span> ${completedDaysLabel}<br>
             Добавлено задач: <span class="font-bold">${s.totalTasks}</span> ${totalTasksLabel}
           </div>
           ${categoriesHtml}`;
 
-        // Список дней
+        // Days list
         let html = '';
         getDays().forEach(date => {
             const dayData = data[date] || { tasks: [], wasted: false };
@@ -509,10 +529,11 @@
             let dayClass = 'bg-slate-700';
             if (past) dayClass = dayData.wasted ? 'wasted' : 'productive';
             else if (isTodayDay) dayClass = taskCount > 0 ? 'today' : 'bg-slate-700';
+
             const taskLabel = pluralize(taskCount, ['дело', 'дела', 'дел']);
 
             html += `
-              <div class="${dayClass} ${!isTodayDay ? 'locked' : ''} rounded-xl p-4 transition-all">
+              <div ${isTodayDay ? 'id="today-day"' : ''} class="${dayClass} ${!isTodayDay ? 'locked' : ''} rounded-xl p-4 transition-all">
                 <div class="flex justify-between items-center mb-3">
                   <div class="font-mono text-base sm:text-lg ${isTodayDay ? 'text-orange-400 font-bold' : ''}">
                     ${new Date(date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })}
@@ -553,15 +574,25 @@
         });
 
         document.getElementById('days-list').innerHTML = html;
+
+        // Scroll to today
+        const todayElement = document.getElementById('today-day');
+        if (todayElement) {
+            todayElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
     }
 
     function getShareText(s) {
-        const siteUrl = 'https://grhgrmgrhrm.github.io/summer-wasted-calc/';
+        const siteUrl = 'https://summertracker.online/';
         return `☀️ Моё лето 2026
 ─────────────────────
-а ты сколько дней лета уже потерял? 👀
+Продуктивных дней: ${s.productive}
+Потеряно: ${s.wasted}
+Текущая серия: ${s.streak} 🔥
+
+А ты сколько дней лета уже потерял? 👀
 👇
-🔗 ${siteUrl}`;
+${siteUrl}`;
     }
 
     function renderShareButtons() {
@@ -570,36 +601,14 @@
         const encoded = encodeURIComponent(text);
 
         const buttons = [
-            {
-                label: 'Telegram',
-                icon: 'fa-brands fa-telegram',
-                color: 'bg-sky-500 hover:bg-sky-600',
-                url: `https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(text)}`
-            },
-            {
-                label: 'WhatsApp',
-                icon: 'fa-brands fa-whatsapp',
-                color: 'bg-green-600 hover:bg-green-700',
-                url: `https://wa.me/?text=${encoded}`
-            },
-            {
-                label: 'Viber',
-                icon: 'fa-brands fa-viber',
-                color: 'bg-purple-600 hover:bg-purple-700',
-                url: `viber://forward?text=${encoded}`
-            },
-            {
-                label: 'Instagram',
-                icon: 'fa-brands fa-instagram',
-                color: 'bg-pink-600 hover:bg-pink-700',
-                action: 'copy'
-            }
+            { label: 'Telegram', icon: 'fa-brands fa-telegram', color: 'bg-sky-500 hover:bg-sky-600', url: `https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(text)}` },
+            { label: 'WhatsApp', icon: 'fa-brands fa-whatsapp', color: 'bg-green-600 hover:bg-green-700', url: `https://wa.me/?text=${encoded}` },
+            { label: 'Viber', icon: 'fa-brands fa-viber', color: 'bg-purple-600 hover:bg-purple-700', url: `viber://forward?text=${encoded}` },
+            { label: 'Instagram', icon: 'fa-brands fa-instagram', color: 'bg-pink-600 hover:bg-pink-700', action: 'copy' }
         ];
 
         document.getElementById('share-buttons').innerHTML = buttons.map(b => `
-            <a ${b.action === 'copy'
-            ? `href="#" onclick="copyForInstagram(); return false;"`
-            : `href="${b.url}" target="_blank" rel="noopener"`}
+            <a ${b.action === 'copy' ? `href="#" onclick="copyForInstagram(); return false;"` : `href="${b.url}" target="_blank" rel="noopener"`}
                class="${b.color} flex items-center justify-center gap-3 px-4 py-3 rounded-xl text-white font-medium transition-all">
                 <i class="${b.icon} text-lg w-5 text-center"></i>
                 <span>${b.label}</span>
@@ -618,6 +627,7 @@
         });
     }
 
+    // ── Initialization ───────────────────────────────────────────────
     render();
     renderShareButtons();
 
@@ -626,7 +636,6 @@
 
     function openModal() {
         modal.classList.remove('hidden');
-        // Небольшая задержка для анимации
         setTimeout(() => {
             modal.classList.add('opacity-100');
             modalContent.classList.remove('scale-95');
@@ -638,92 +647,58 @@
         modal.classList.remove('opacity-100');
         modalContent.classList.remove('scale-100');
         modalContent.classList.add('scale-95');
-        setTimeout(() => {
-            modal.classList.add('hidden');
-        }, 300);
-
-        // Запоминаем, что пользователь видел инструкцию
+        setTimeout(() => modal.classList.add('hidden'), 300);
         localStorage.setItem('instructionsShown', 'true');
     }
 
-    // Автооткрытие при первом входе
     window.addEventListener('DOMContentLoaded', () => {
         if (!localStorage.getItem('instructionsShown')) {
-            setTimeout(openModal, 1000); // Открываем через секунду после загрузки
+            setTimeout(openModal, 1000);
         }
     });
 
-    // Закрытие по клику на фон
     modal.addEventListener('click', (e) => {
         if (e.target === modal) closeModal();
     });
 
-    // ЭКСПОРТ ДАННЫХ
+    // ── Export / Import ──────────────────────────────────────────────
     function exportData() {
-        // Получаем текущие данные из localStorage
         const rawData = localStorage.getItem(NEW_KEY);
         if (!rawData || rawData === '{}') {
             alert('Пока нечего сохранять. Добавь хотя бы одно дело!');
             return;
         }
 
-        // Создаем Blob (файл) с данными
         const blob = new Blob([rawData], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
-
-        // Создаем временную ссылку для скачивания
         const a = document.createElement('a');
         const date = new Date().toISOString().split('T')[0];
+
         a.href = url;
         a.download = `summer_wasted_backup_${date}.json`;
-
-        // Имитируем клик
         document.body.appendChild(a);
         a.click();
-
-        // Удаляем временные элементы
         setTimeout(() => {
             document.body.removeChild(a);
             window.URL.revokeObjectURL(url);
         }, 0);
     }
 
-
-    // Функция валидации структуры данных
     function isValidBackup(data) {
-        // 1. Проверяем, что это объект и не null
         if (typeof data !== 'object' || data === null || Array.isArray(data)) return false;
 
         const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-
-        // Получаем все ключи (даты)
         const keys = Object.keys(data);
 
-        // Если файл пустой, но это объект — технически это валидно, но предупредим позже
-        if (keys.length === 0) return true;
-
-        // Проверяем каждую запись
         for (const date of keys) {
-            // Проверка формата даты (YYYY-MM-DD)
             if (!dateRegex.test(date)) return false;
 
             const dayEntry = data[date];
-
-            // Проверка наличия массива задач (даже если он пустой)
             if (!dayEntry || !Array.isArray(dayEntry.tasks)) return false;
-
-            // Проверка самих задач (если они есть)
-            for (const task of dayEntry.tasks) {
-                if (typeof task.text !== 'string') return false;
-                // Поле category или done могут отсутствовать в старых версиях,
-                // поэтому проверяем только критичное — текст.
-            }
         }
-
         return true;
     }
 
-    // ИМПОРТ ДАННЫХ (обновленный)
     function importData(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -733,9 +708,8 @@
             try {
                 const importedData = JSON.parse(e.target.result);
 
-                // ЗАПУСКАЕМ ПРОВЕРКУ
                 if (!isValidBackup(importedData)) {
-                    alert('Ошибка: Файл имеет неверную структуру и не может быть прочитан.');
+                    alert('Ошибка: Файл имеет неверную структуру.');
                     return;
                 }
 
@@ -744,14 +718,12 @@
                     return;
                 }
 
-                // Подтверждение
-                if (confirm('Файл прошел проверку. Заменить текущий прогресс данными из бэкапа?')) {
+                if (confirm('Заменить текущий прогресс данными из бэкапа?')) {
                     localStorage.setItem(NEW_KEY, JSON.stringify(importedData));
                     alert('Данные успешно восстановлены!');
                     location.reload();
                 }
             } catch (err) {
-                console.error(err);
                 alert('Ошибка: Файл не является корректным JSON.');
             }
         };
